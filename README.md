@@ -1,6 +1,7 @@
 # sortest
 
-**Continuous testing in Python** with sorting by test speed, and auto-restart when files change.
+**Continuous testing in Python** with test sorting by execution speed,
+  and with auto-restart from the beginning when files change.
 
 For about nine months I have been using a [continuous testing
 tool](https://github.com/eigenhombre/continuous-testing-helper/) I
@@ -31,11 +32,20 @@ My answer is `sortest`, which meets these requirements.  `sortest`
 borrows a module-loading utility from Nose (and therefore has `nose`
 as a requirement) but otherwise stands alone.
 
+The first time through, tests are run in discovery order, but `sortest`
+remembers the test speeds for subsequent passes, and runs the fastest
+ones first after that (assuming no tests fail).
+
 ## Installation
 
     pip install sortest  # Or easy_install sortest
 
 ## Example Usage
+
+At the bash prompt:
+
+    cd /path/to/my/great/source/code
+    sortest
 
 In your Python test program:
 
@@ -52,12 +62,14 @@ In your Python test program:
 
 ## Requirements
 
-Tested only on Python 2.6 so far.  Depends upon Nose package.
+Tested only on Python 2.6 so far.  Depends on the Nose package.
 
 ## To Do
 
-Many, many things.
+Many, many things, including:
 
+1. Allow command line options for verbosity, files/directories to
+exclude, and source code path.
 1. Right now it only runs functions called `test_...` in your source
 tree.  Need to support `unittest.TestCase` classes & methods.
 1. Options are limited compared to Nose.
