@@ -4,7 +4,7 @@
 
 For about nine months I have been using a [continuous testing
 tool](https://github.com/eigenhombre/continuous-testing-helper/) I
-wrote called `conttest`), in conjuntion with
+wrote called `conttest`), in conjunction with
 [Nose](https://nose.readthedocs.org/en/latest/), for continuous
 testing of Python code.  Depending on what I'm working on, 
 `conttest` automagically runs one, some or all of my automated tests,
