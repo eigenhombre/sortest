@@ -46,7 +46,7 @@ def find_files_and_updates(rootdir, excluded_dirs):
 
 def add_tests_for_path(funcdict, rootdir, fullpath, importer):
     modname = os.path.splitext(fullpath.replace(
-        rootdir, "").lstrip("/"))[0].replace("/", ".")
+        rootdir, "", 1).lstrip("/"))[0].replace("/", ".")
     module = importer.importFromPath(fullpath, modname)
     reload(module)
     items = [(i, getattr(module, i, None))

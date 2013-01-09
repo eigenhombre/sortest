@@ -14,7 +14,7 @@ The problem with this approach is that I either have to specify what
 test I want it to run (very fast, but requires detailed work at the
 command line), or let it run all my tests, which at the moment clock
 upwards of ten minutes.  Since I favor a full-on TDD approach, this is
-an unhappy choice to have to make.  As a result of a lot of experience with
+an unhappy choice to have to make.  As a result of my experiences with
 this approach, I want:
 
 1. To have a program discover all the tests I have to run;
@@ -24,7 +24,7 @@ this approach, I want:
 1. Even if the tests aren't done yet, **restart the testing from the beginning** if I change any source files.
 
 The first three, I can get Nose to do no problem.  I tried to write a
-plugin for Nose to do Items 4 and 5, to no avail, but I suspect only
+plugin for Nose to do Items 4 and 5, to no avail -- I suspect only
 the God of Noses can do such a thing.
 
 My answer is `sortest`, which meets these requirements.  `sortest`
@@ -52,17 +52,16 @@ In your Python test program:
 
 ## Requirements
 
-Tested only on Python 2.6 so far.
+Tested only on Python 2.6 so far.  Depends upon Nose package.
 
 ## To Do
 
 Many, many things.
 
-1. Make a stand-alone test program
 1. Right now it only runs functions called `test_...` in your source
 tree.  Need to support `unittest.TestCase` classes & methods.
-1. Options are very limited compared to Nose.
-1. Code could stand some comments and refactoring.
+1. Options are limited compared to Nose.
+1. Code could stand some more comments and refactoring.
 
 ## Caveat
 
