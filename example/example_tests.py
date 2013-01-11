@@ -1,4 +1,5 @@
 import time
+import unittest
 
 
 def test_1():
@@ -14,33 +15,34 @@ def test_3():
 
 
 def test_4():
-    time.sleep(0.1)
-
-
-def test_5():
-    time.sleep(0.2)
-
-
-def test_6():
     time.sleep(0.3)
 
 
+def test_5():
+    time.sleep(1) 
+
+
+def test_6():
+    time.sleep(0.6)
+
+
 def test_7():
-    1/0
-    time.sleep(1)
+    time.sleep(0.8)
 
-
+    
 def test_8():
-    time.sleep(2)
+    time.sleep(0.9)
 
 
-def test_9():
-    time.sleep(2)
+class TestSomething(unittest.TestCase):
+    def test_something(self):
+        time.sleep(0.6)
 
+    def test_something_else(self):
+        time.sleep(0.3)
 
-def test_10():
-    time.sleep(3)
+    def test_3(self):
+        pass
 
-
-def test_11():
-    time.sleep(5)
+    def test_4(self):
+        print "test_4"

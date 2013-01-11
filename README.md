@@ -22,7 +22,8 @@ this approach, I want:
 1. To stop at the first failure;
 1. To always run the last failed test first;
 1. If there is no previous test failure, **run the fastest tests first**;
-1. Even if the tests aren't done yet, **restart the testing from the beginning** if I change any source files.
+1. Even if the tests aren't done yet, **restart the testing from the
+   beginning** if I change any source files.
 
 The first three, I can get Nose to do no problem.  I tried to write a
 plugin for Nose to do Items 4 and 5, to no avail -- I suspect only
@@ -62,18 +63,20 @@ In your Python test program:
 
 ## Requirements
 
-Tested only on Python 2.6 so far.  Depends on the Nose package.
+Tested only on Python 2.6 so far.  Depends on the Nose package for package importing.
 
 ## To Do
 
 Many, many things, including:
 
-1. Allow command line options for verbosity, files/directories to
-exclude, and source code path.
 1. Right now it only runs functions called `test_...` in your source
 tree.  Need to support `unittest.TestCase` classes & methods.
+from being run(!)
+1. Allow command line options for verbosity, files/directories to
+exclude, and source code path.
 1. Options are limited compared to Nose.
 1. Code could stand some more comments and refactoring.
+1. Removing a test from the target codebase doesn't seem to stop it
 
 ## Caveat
 
