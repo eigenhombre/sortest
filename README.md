@@ -14,8 +14,16 @@ whenever I save a file in my source tree.
 The problem with this approach is that I either have to specify what
 test I want it to run (very fast, but requires detailed work at the
 command line), or let it run all my tests, which at the moment clock
-upwards of ten minutes.  Since I favor a full-on TDD approach, this is
-an unhappy choice to have to make.  As a result of my experiences with
+upwards of ten minutes (far too slow to get immediate feedback). Since
+I favor a full-on TDD approach, this is an unhappy choice to have to
+make. When I start writing a new test, I want to know immediately when
+that test passes or succeeds. And, when I'm thinking and typing,
+there's no reason my slower tests shouldn't continue to run, finding
+failures in slow tests or in [tests which only fail
+occasionally](http://stackoverflow.com/questions/13611658/repeated-single-or-multiple-tests-with-nose).
+
+
+As a result of my experiences with
 this approach, I want:
 
 1. To have a program discover all the tests I have to run;
@@ -46,7 +54,7 @@ ones first after that (assuming no tests fail).
 At the bash prompt:
 
     cd /path/to/my/great/source/code
-    sortest
+    sortest   # -h to see options
 
 In your Python test program:
 
