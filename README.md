@@ -69,9 +69,8 @@ Tested only on Python 2.6 so far.  Depends on the Nose package for package impor
 
 Many, many things, including:
 
-1. Right now it only runs functions called `test_...` in your source
-tree.  Need to support `unittest.TestCase` classes & methods.
-from being run(!)
+1. Support for `unittest.TestCase` is extremely primitive so far,
+especially stacktraces.
 1. Allow command line options for verbosity, files/directories to
 exclude, and source code path.
 1. Options are limited compared to Nose.

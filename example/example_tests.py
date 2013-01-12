@@ -2,6 +2,17 @@ import time
 import unittest
 
 
+class TestSomething(unittest.TestCase):
+    def test_a_thing(self):
+        time.sleep(0.001)
+
+    def test_something_else(self):
+        time.sleep(0.2)
+
+    def test_yet_again(self):
+        time.sleep(0.4)
+
+
 def test_1():
     time.sleep(0.0001)
 
@@ -32,17 +43,3 @@ def test_7():
     
 def test_8():
     time.sleep(0.9)
-
-
-class TestSomething(unittest.TestCase):
-    def test_something(self):
-        time.sleep(0.6)
-
-    def test_something_else(self):
-        time.sleep(0.3)
-
-    def test_3(self):
-        pass
-
-    def test_4(self):
-        print "test_4"

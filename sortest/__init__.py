@@ -54,6 +54,7 @@ def find_modules(rootdir, dictgen):
         reload(module)
         d["modname"] = modname
         d["module"] = module
+        d["tests"] = []
         yield d
 
 
@@ -64,19 +65,55 @@ def is_a_test_function(func):
 def get_test_functions_for_modules(dictgen):
     for d in dictgen:
         module = d["module"]
-        d["tests"] = []
         for itemname in dir(module):
             item = getattr(module, itemname, None)
             if is_a_test_function(item):
                 d["tests"].append({"function": item,
+                                   "testtype": "function",
                                    "funname": ":".join((d["modname"], itemname))})
         yield d
 
 
-def duration_and_success_status(f):
+class ExceptionCatchingResult(unittest.TestResult):
+    """
+    Needed to collect result from unittest.TestCases
+    """
+    def addError(self, t, q):
+        print "\n\naddError", t, type(t), q, type(q)
+        raise q[0]
+
+    def addFailure(self, t, q):
+        print "\n\naddFailure", t, type(t), q, type(q)
+        raise q[0]
+
+
+def get_unittest_functions(mods):
+    tl = unittest.TestLoader()
+    for module in mods:
+        for itemname in dir(module["module"]):
+            item = getattr(module["module"], itemname, None)
+            if (item and
+                nose.util.isclass(item) and
+                issubclass(item, unittest.TestCase)):
+                for t in tl.loadTestsFromTestCase(item):
+                    funname = "%s:%s.%s" % (module["modname"],
+                                            itemname,
+                                            t._testMethodName)
+                    module["tests"].append({"function": t,
+                                            "testtype": "unittest",
+                                            "funname": funname})
+        yield module
+
+
+def duration_and_success_status(frec):
+    test_result = ExceptionCatchingResult()
     t = time.time()
     try:
-        f()
+        if frec["testtype"] == "unittest":
+            frec["function"](test_result)
+        else:
+            assert frec["testtype"] == "function"
+            frec["function"]()
     except Exception, e:
         traceback.print_exc()
         return time.time() - t, False
@@ -103,7 +140,8 @@ def get_all_wanted_files(rootdir, excluded_files, excluded_dirs):
 
 def get_functions_from_files(rootdir, files):
     with_modules = find_modules(rootdir, files)
-    with_testfuns = get_test_functions_for_modules(with_modules)
+    unittest_funs = get_unittest_functions(with_modules)
+    with_testfuns = get_test_functions_for_modules(unittest_funs)
     return unroll_into_functions(with_testfuns)
 
 
@@ -129,11 +167,11 @@ def any_files_have_changed(filedict, last_check):
             return True
 
 
-def run(function, funname, verbose_level):
+def run(frec, verbose_level):
     if verbose_level > 1:
-        print funname,
+        print frec["funname"],
         sys.stdout.flush()
-    duration, succeeded = duration_and_success_status(function)
+    duration, succeeded = duration_and_success_status(frec)
     if verbose_level == 1:
         os.write(sys.stdout.fileno(), ".")
         sys.stdout.flush()
@@ -152,6 +190,7 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
     durations = collections.defaultdict(constant_factory(1E10))
     succeeded = collections.defaultdict(bool)
     while True:
+    #for _ in range(100):   # For development with conttest
         if state == START:
             files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
             try:
@@ -165,18 +204,18 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
 
         if state == RUN:
             if not funcs:
-                print "OK"
+                print "\nOK"
                 state = WAIT
                 continue
             f = funcs.pop(0)
-            testtime, result = run(f["function"], f["funname"], verbose_level)
+            testtime, result = run(f, verbose_level)
             durations[f["funname"]] = testtime
             succeeded[f["funname"]] = result
             if result == False:
                 state = WAIT
                 continue
             t = time.time()
-            if t - last_timeout > 0.3:
+            if t - last_timeout > 0.5:
                 last_timeout = t
                 files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
                 if any_files_have_changed(files, file_t):
@@ -191,7 +230,7 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
                 state = START
             else:
                 time.sleep(0.05)
-
+    # print "XXXXX"    # For development with conttest
 
 """
 def find_files_and_updates(rootdir, excluded_dirs):
