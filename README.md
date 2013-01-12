@@ -56,7 +56,7 @@ At the bash prompt:
     cd /path/to/my/great/source/code
     sortest   # -h to see options
 
-In your Python test program:
+Alternatively, in some Python program that you use to steer your testing:
 
     import sortest
 
@@ -79,21 +79,30 @@ Tested only on Python 2.6 so far.  Depends on the Nose package for package impor
 
 ## To Do
 
-Many, many things, including:
+Many things, in roughly the following order, including:
 
-1. Support for `unittest.TestCase` is extremely primitive so far,
-especially stacktraces.
-1. Allow command line options for verbosity, files/directories to
-exclude, and source code path.
-1. Options are limited compared to Nose.
+1. Allow command line option for source code path.
+1. Removing a test from the target codebase doesn't seem to stop it from being executed
+1. Improve support for `unittest.TestCase`s, which is extremely primitive so far,
+especially regarding stacktrace reporting.
 1. Code could stand some more comments and refactoring.
-1. Removing a test from the target codebase doesn't seem to stop it
+1. Options are limited compared to Nose (though I may keep it simpler than Nose and `unittest`).  I am considering allowing plugins for:
+    - Global test setup (e.g. for a Django database harness)
+    - Test discovery
+    - Deciding test order
+    - Deciding stop criteria
+    - Deciding restart criteria
 
 ## Caveat
 
-This is VERY VERY alpha software.  DON'T USE IT YET.  I cannot be held
+This is VERY alpha software.  DON'T USE IT YET.  I cannot be held
 liable for any missiles launched or life support systems crashed
 because you used this completely unsupported and brand-new software.
+
+In particular, be advised that ANY function named `test_*` in
+directories/files not explicitly excluded will be run. So rename
+those `test_launch_missiles`, `test_database_destroy` and
+`test_turn_off_life_support` functions.
 
 ## License
 
