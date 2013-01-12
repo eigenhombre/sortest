@@ -16,6 +16,7 @@ import unittest
 def find_python_files(rootdir, excluded_dirs):
     for root, subdirs, files in os.walk(rootdir):
         for baddir in excluded_dirs:
+            baddir = baddir.rstrip("/").lstrip("/")
             if baddir in subdirs:
                 subdirs.remove(baddir)
         for f in files:
@@ -190,7 +191,7 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
     durations = collections.defaultdict(constant_factory(1E10))
     succeeded = collections.defaultdict(bool)
     while True:
-    #for _ in range(100):   # For development with conttest
+    # for _ in range(100):   # For development with conttest
         if state == START:
             files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
             try:

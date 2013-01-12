@@ -65,6 +65,10 @@ In your Python test program:
 
 Tested only on Python 2.6 so far.  Depends on the Nose package for package importing.
 
+## Author
+
+[John Jacobsen](http://eigenhombre.com), [NPX Designs](http://npxdesigns.com), Inc.
+
 ## To Do
 
 Many, many things, including:
