@@ -13,18 +13,19 @@ import traceback
 import unittest
 
 
-def find_python_files(rootdir, excluded_dirs):
-    for root, subdirs, files in os.walk(rootdir):
-        for baddir in excluded_dirs:
-            baddir = baddir.rstrip("/").lstrip("/")
-            if baddir in subdirs:
-                subdirs.remove(baddir)
-        for f in files:
-            if f.endswith('.py'):
-                yield root, f
+def find_python_files(rootdirs, excluded_dirs):
+    for rootdir in rootdirs:
+        for root, subdirs, files in os.walk(rootdir):
+            for baddir in excluded_dirs:
+                baddir = baddir.rstrip("/").lstrip("/")
+                if baddir in subdirs:
+                    subdirs.remove(baddir)
+            for f in files:
+                if f.endswith('.py'):
+                    yield root, f
 
 
-def find_python_update_times(rootdir, excluded_dirs, pyfiles):
+def find_python_update_times(excluded_dirs, pyfiles):
     for d, f in pyfiles:
         try:
             yield {"dir": d,
@@ -55,7 +56,7 @@ def nuke_module_refs(module):
             delattr(module, attr)
 
 
-def find_modules(rootdir, dictgen):
+def find_modules(dictgen):
     importer = nose.importer.Importer()
     for d in dictgen:
         modname = nose.util.getpackage(d["path"])
@@ -85,19 +86,6 @@ def get_test_functions_for_modules(dictgen):
         yield d
 
 
-class ExceptionCatchingResult(unittest.TestResult):
-    """
-    Needed to collect result from unittest.TestCases
-    """
-    def addError(self, t, q):
-        print "\n\naddError", t, type(t), q, type(q)
-        raise q[0]
-
-    def addFailure(self, t, q):
-        print "\n\naddFailure", t, type(t), q, type(q)
-        raise q[0]
-
-
 def get_unittest_functions(mods):
     tl = unittest.TestLoader()
     for module in mods:
@@ -117,7 +105,7 @@ def get_unittest_functions(mods):
 
 
 def duration_and_success_status(frec, dry_run):
-    test_result = ExceptionCatchingResult()
+    test_result = unittest.TestResult()
     t = time.time()
     try:
         if not dry_run:
@@ -126,11 +114,14 @@ def duration_and_success_status(frec, dry_run):
             else:
                 assert frec["testtype"] == "function"
                 frec["function"]()
-    except Exception, e:
+    except Exception, e:   # handle failing functions
         traceback.print_exc()
         return time.time() - t, False
     else:
-        return time.time() - t, True
+        if not test_result.wasSuccessful():
+            print
+            print "\n".join([e[1] for e in test_result.failures + test_result.errors])
+        return time.time() - t, test_result.wasSuccessful()
 
 
 def unroll_into_functions(modules_gen):
@@ -144,14 +135,14 @@ def unroll_into_functions(modules_gen):
             yield f
 
 
-def get_all_wanted_files(rootdir, excluded_files, excluded_dirs):
-    pyfiles = find_python_files(rootdir, excluded_dirs)
-    py_updated = find_python_update_times(rootdir, excluded_dirs, pyfiles)
+def get_all_wanted_files(rootdirs, excluded_files, excluded_dirs):
+    pyfiles = find_python_files(rootdirs, excluded_dirs)
+    py_updated = find_python_update_times(excluded_dirs, pyfiles)
     return wanted_files(excluded_files, excluded_dirs, py_updated)
 
 
-def get_functions_from_files(rootdir, files):
-    with_modules = find_modules(rootdir, files)
+def get_functions_from_files(files):
+    with_modules = find_modules(files)
     unittest_funs = get_unittest_functions(with_modules)
     with_testfuns = get_test_functions_for_modules(unittest_funs)
     return unroll_into_functions(with_testfuns)
@@ -188,11 +179,11 @@ def run(frec, verbose_level, dry_run):
         os.write(sys.stdout.fileno(), ".")
         sys.stdout.flush()
     elif verbose_level > 1 and succeeded:
-        print "%.4f" % duration
+        print "%.4fs" % duration
     return duration, succeeded
 
 
-def continuously_test(rootdir, excluded_files, excluded_dirs,
+def continuously_test(rootdirs, excluded_files, excluded_dirs,
                       verbose_level=1, dry_run=False):
     file_t = time.time()
     last_timeout = time.time()
@@ -204,9 +195,9 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
     while True:
     # for _ in range(100):   # For development with conttest
         if state == START:
-            files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
+            files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
             try:
-                funcs = sorted(list(get_functions_from_files(rootdir, files)),
+                funcs = sorted(list(get_functions_from_files(files)),
                                key=lambda f: durations[f["funname"]])
             except (IndentationError, SyntaxError):
                 traceback.print_exc()
@@ -229,14 +220,14 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
             t = time.time()
             if t - last_timeout > 0.5:
                 last_timeout = t
-                files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
+                files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
                 if any_files_have_changed(files, file_t):
                     file_t = time.time()
                     state = START
                     continue
 
         if state == WAIT:
-            files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
+            files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
             if any_files_have_changed(files, file_t):
                 file_t = time.time()
                 state = START

@@ -5,7 +5,7 @@
 
 For about nine months I have been using a [continuous testing
 tool](https://github.com/eigenhombre/continuous-testing-helper/) I
-wrote called `conttest`), in conjunction with
+wrote called `conttest`, in conjunction with
 [Nose](https://nose.readthedocs.org/en/latest/), for continuous
 testing of Python code.  Depending on what I'm working on, 
 `conttest` automagically runs one, some or all of my automated tests,
@@ -59,11 +59,11 @@ At the bash prompt:
 Usage:
 
     usage: sortest [-h] [-v | -q] [-f EXCLUDE_FILE] [-d EXCLUDE_DIR] [-n]
-                   [rootdir]
+                   [rootdir1] [rootdir2] ...
 
     positional arguments:
-      rootdir               Directory to search in and to perform tests on
-                            (default=current working directory)
+      rootdirX              One or more directories to search in and to perform 
+                            tests on (default=current working directory)
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -79,12 +79,12 @@ You can also call the `sortest` test infrastructure from inside your Python code
     import sortest
 
     rootdir = os.path.join(*(["/"] +
-                  os.path.dirname(__file__).split('/')[:-1]))
-    # Or some other working directory...
+                             os.path.dirname(__file__).split('/')[:-1]))
+    dirlist = [rootdir]  # Can add more directories if desired...
 
     excluded_files = ["__init__.py", "fabfile.py", "setup.py"]
     excluded_dirs = ['.svn', '.git', 'man', 'migrations']
-    sortest.continuously_test(rootdir, excluded_files,
+    sortest.continuously_test(dirlist, excluded_files,
                               excluded_dirs, verbose_level=1)
 
 ## Requirements
@@ -100,7 +100,6 @@ Tested only on Python 2.6 so far.  Depends on the Nose package for package impor
 1. Add `@first` and `@last` decorators, which will put the decorated
 test functions first or last in the list of tests, overriding sort
 order (except failed tests still run first).
-1. Improve stacktrace reporting for `unittest.TestCase`s.
 1. Tests in subclasses of `unittest.TestCase` get run in sub-subclasses as well, and should not.
 1. Code could stand some more comments and cleanup.
 1. Options are limited compared to Nose (though I may keep it simpler
