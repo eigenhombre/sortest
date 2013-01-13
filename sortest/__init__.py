@@ -43,15 +43,24 @@ def wanted_files(excluded_files, excluded_dirs, filesgen):
             yield d
 
 
+def nuke_module_refs(module):
+    """
+    Delete all refs to e.g. functions in a module, which are NOT
+    automagically cleaned out when module is reloaded; see
+    http://stackoverflow.com/questions/11380328/\
+    why-does-pythons-imp-reload-not-delete-old-classes-and-functions
+    """
+    for attr in dir(module):
+        if attr not in ('__name__', '__file__'):
+            delattr(module, attr)
+
+
 def find_modules(rootdir, dictgen):
     importer = nose.importer.Importer()
     for d in dictgen:
-        modname = os.path.splitext(d["path"].replace(
-            rootdir, "", 1).lstrip("/"))[0].replace("/", ".")
-        modname = re.sub(r"\.__init__$", "", modname)
-        # Account for possibility that __init__.py is our source file,
-        # which we don't want for Nose's importer....:
+        modname = nose.util.getpackage(d["path"])
         module = importer.importFromPath(d["path"], modname)
+        nuke_module_refs(module)
         reload(module)
         d["modname"] = modname
         d["module"] = module
@@ -60,11 +69,12 @@ def find_modules(rootdir, dictgen):
 
 
 def is_a_test_function(func):
-    return inspect.isfunction(func) and func.__name__.startswith("test_")
+    return inspect.isfunction(func) and func.__name__.startswith("test")
 
 
 def get_test_functions_for_modules(dictgen):
     for d in dictgen:
+        
         module = d["module"]
         for itemname in dir(module):
             item = getattr(module, itemname, None)
@@ -173,10 +183,10 @@ def run(frec, verbose_level):
         print frec["funname"],
         sys.stdout.flush()
     duration, succeeded = duration_and_success_status(frec)
-    if verbose_level == 1:
+    if verbose_level == 1 and succeeded:
         os.write(sys.stdout.fileno(), ".")
         sys.stdout.flush()
-    elif verbose_level > 1:
+    elif verbose_level > 1 and succeeded:
         print "%.4f" % duration
     return duration, succeeded
 
@@ -193,7 +203,7 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
     while True:
     # for _ in range(100):   # For development with conttest
         if state == START:
-            files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
+            files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
             try:
                 funcs = sorted(list(get_functions_from_files(rootdir, files)),
                                key=lambda f: durations[f["funname"]])
@@ -218,14 +228,14 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
             t = time.time()
             if t - last_timeout > 0.5:
                 last_timeout = t
-                files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
+                files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
                 if any_files_have_changed(files, file_t):
                     file_t = time.time()
                     state = START
                     continue
 
         if state == WAIT:
-            files = list(get_all_wanted_files(rootdir, excluded_files, excluded_dirs))
+            files = get_all_wanted_files(rootdir, excluded_files, excluded_dirs)
             if any_files_have_changed(files, file_t):
                 file_t = time.time()
                 state = START

@@ -79,19 +79,21 @@ Tested only on Python 2.6 so far.  Depends on the Nose package for package impor
 
 ## To Do
 
-Many things, in roughly the following order, including:
-
-1. Allow command line option for source code path.
-1. Removing a test from the target codebase doesn't seem to stop it from being executed
-1. Improve support for `unittest.TestCase`s, which is extremely primitive so far,
+1. Add `@first` and `@last` decorators, which will put the decorated
+test functions first or last in the list of tests, overriding sort
+order (except failed tests still run first).
+1. Improve support for `unittest.TestCase`s, which is primitive so far,
 especially regarding stacktrace reporting.
-1. Code could stand some more comments and refactoring.
-1. Options are limited compared to Nose (though I may keep it simpler than Nose and `unittest`).  I am considering allowing plugins for:
+1. Code could stand some more comments and cleanup.
+1. Options are limited compared to Nose (though I may keep it simpler
+than Nose and `unittest`). I am considering allowing plugins for:
     - Global test setup (e.g. for a Django database harness)
     - Test discovery
     - Deciding test order
     - Deciding stop criteria
     - Deciding restart criteria
+1. More unit tests!
+
 
 ## Caveat
 
