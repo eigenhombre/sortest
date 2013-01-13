@@ -198,7 +198,8 @@ def continuously_test(rootdirs, excluded_files, excluded_dirs,
             files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
             try:
                 funcs = sorted(list(get_functions_from_files(files)),
-                               key=lambda f: durations[f["funname"]])
+                               key=lambda f: (succeeded[f["funname"]],
+                                              durations[f["funname"]]))
             except (IndentationError, SyntaxError):
                 traceback.print_exc()
                 state = WAIT
