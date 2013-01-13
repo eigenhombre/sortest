@@ -4,7 +4,7 @@ from setuptools import setup
 
 
 setup(name='sortest',
-      version='0.0.7',
+      version='0.0.8',
       description=('Continuous testing in Python with sorting by test speed '
                    'and auto-restart when files change'),
       url='https://github.com/eigenhombre/sortest',
