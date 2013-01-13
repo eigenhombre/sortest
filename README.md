@@ -101,7 +101,7 @@ This is VERY alpha software.  DON'T USE IT YET.  I cannot be held
 liable for any missiles launched or life support systems crashed
 because you used this completely unsupported and brand-new software.
 
-In particular, be advised that ANY function named `test_*` in
+In particular, be advised that ANY function named `test*` in
 directories/files not explicitly excluded will be run. So rename
 those `test_launch_missiles`, `test_database_destroy` and
 `test_turn_off_life_support` functions.
