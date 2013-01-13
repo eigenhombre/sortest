@@ -2,7 +2,15 @@ import time
 import unittest
 
 
-class TestSomething(unittest.TestCase):
+class TestSubClass(unittest.TestCase):
+    def test_something_in_first_subclass(self):
+        pass
+
+    
+class TestSubSubClass(TestSubClass):
+    def setUp(self):
+        pass
+        
     def test_a_thing(self):
         time.sleep(0.001)
 

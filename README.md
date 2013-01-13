@@ -82,8 +82,8 @@ Tested only on Python 2.6 so far.  Depends on the Nose package for package impor
 1. Add `@first` and `@last` decorators, which will put the decorated
 test functions first or last in the list of tests, overriding sort
 order (except failed tests still run first).
-1. Improve support for `unittest.TestCase`s, which is primitive so far,
-especially regarding stacktrace reporting.
+1. Improve stacktrace reporting for `unittest.TestCase`s.
+1. Tests in subclasses of `unittest.TestCase` get run in sub-subclasses as well, and should not.
 1. Code could stand some more comments and cleanup.
 1. Options are limited compared to Nose (though I may keep it simpler
 than Nose and `unittest`). I am considering allowing plugins for:
