@@ -49,14 +49,32 @@ ones first after that (assuming no tests fail).
 
     pip install sortest  # Or easy_install sortest
 
-## Example Usage
+## Using sortest
 
 At the bash prompt:
 
     cd /path/to/my/great/source/code
-    sortest   # -h to see options
+    sortest
 
-Alternatively, in some Python program that you use to steer your testing:
+Usage:
+
+    usage: sortest [-h] [-v | -q] [-f EXCLUDE_FILE] [-d EXCLUDE_DIR] [-n]
+                   [rootdir]
+
+    positional arguments:
+      rootdir               Directory to search in and to perform tests on
+                            (default=current working directory)
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --verbose
+      -q, --quiet
+      -f EXCLUDE_FILE, --exclude-file EXCLUDE_FILE
+      -d EXCLUDE_DIR, --exclude-dir EXCLUDE_DIR
+      -n, --dry-run
+
+
+You can also call the `sortest` test infrastructure from inside your Python code:
 
     import sortest
 

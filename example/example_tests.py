@@ -46,8 +46,8 @@ def test_6():
 
 
 def test_7():
-    time.sleep(0.8)
+    time.sleep(0.7)
 
     
 def test_8():
-    time.sleep(0.9)
+    time.sleep(0.8)

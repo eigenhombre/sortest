@@ -11,6 +11,7 @@ if __name__ == '__main__':
     group.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument("-f", "--exclude-file", action="append")
     parser.add_argument("-d", "--exclude-dir", action="append")
+    parser.add_argument("-n", "--dry-run", action="store_true")
     parser.add_argument("rootdir", nargs='?', default=os.getcwd(),
                         help=("Directory to search in and to perform tests on "
                               "(default=current working directory)"))
@@ -27,6 +28,7 @@ if __name__ == '__main__':
         verbosity = 1
     try:
         sortest.continuously_test(os.path.abspath(args.rootdir), excluded_files,
-                                  excluded_dirs, verbose_level=verbosity)
+                                  excluded_dirs, verbose_level=verbosity,
+                                  dry_run=args.dry_run)
     except KeyboardInterrupt:
         print

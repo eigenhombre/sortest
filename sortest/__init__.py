@@ -116,15 +116,16 @@ def get_unittest_functions(mods):
         yield module
 
 
-def duration_and_success_status(frec):
+def duration_and_success_status(frec, dry_run):
     test_result = ExceptionCatchingResult()
     t = time.time()
     try:
-        if frec["testtype"] == "unittest":
-            frec["function"](test_result)
-        else:
-            assert frec["testtype"] == "function"
-            frec["function"]()
+        if not dry_run:
+            if frec["testtype"] == "unittest":
+                frec["function"](test_result)
+            else:
+                assert frec["testtype"] == "function"
+                frec["function"]()
     except Exception, e:
         traceback.print_exc()
         return time.time() - t, False
@@ -178,11 +179,11 @@ def any_files_have_changed(filedict, last_check):
             return True
 
 
-def run(frec, verbose_level):
+def run(frec, verbose_level, dry_run):
     if verbose_level > 1:
         print frec["funname"],
         sys.stdout.flush()
-    duration, succeeded = duration_and_success_status(frec)
+    duration, succeeded = duration_and_success_status(frec, dry_run)
     if verbose_level == 1 and succeeded:
         os.write(sys.stdout.fileno(), ".")
         sys.stdout.flush()
@@ -192,7 +193,7 @@ def run(frec, verbose_level):
 
 
 def continuously_test(rootdir, excluded_files, excluded_dirs,
-                      verbose_level=1):
+                      verbose_level=1, dry_run=False):
     file_t = time.time()
     last_timeout = time.time()
     state = START
@@ -219,7 +220,7 @@ def continuously_test(rootdir, excluded_files, excluded_dirs,
                 state = WAIT
                 continue
             f = funcs.pop(0)
-            testtime, result = run(f, verbose_level)
+            testtime, result = run(f, verbose_level, dry_run)
             durations[f["funname"]] = testtime
             succeeded[f["funname"]] = result
             if result == False:
