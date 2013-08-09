@@ -169,7 +169,7 @@ WAIT = "w"
 def any_files_have_changed(filedict, last_check, verbose_level):
     for f in filedict:
         if f["saved"] > last_check:
-            if verbose_level > 0:
+            if verbose_level > 1:
                 print "%s %s has changed" % ("." * 30, f["path"])
             return True
 
