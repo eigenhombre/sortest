@@ -3,10 +3,9 @@ import inspect
 import itertools
 import nose.importer
 import nose.util
-import operator
+import re
 import os
 import os.path
-import re
 import sys
 import time
 import traceback
@@ -36,10 +35,13 @@ def find_python_update_times(excluded_dirs, pyfiles):
             pass  # Skip deleted file
 
 
+def excluded_file(fname, excluded):
+    return [p for p in excluded if re.search(p, fname)]
+
+
 def wanted_files(excluded_files, excluded_dirs, filesgen):
     for d in filesgen:
-        if (d["file"] not in excluded_files
-            and
+        if (not excluded_file(d["file"], excluded_files) and
             d["dir"] not in excluded_dirs):
             yield d
 

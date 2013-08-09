@@ -69,7 +69,7 @@ Usage:
       -h, --help            show this help message and exit
       -v, --verbose
       -q, --quiet
-      -f EXCLUDE_FILE, --exclude-file EXCLUDE_FILE
+      -f EXCLUDE_FILE, --exclude-file EXCLUDE_FILE.  Can be a (Python-syntax) regex.
       -d EXCLUDE_DIR, --exclude-dir EXCLUDE_DIR
       -n, --dry-run
 
@@ -82,7 +82,7 @@ You can also call the `sortest` test infrastructure from inside your Python code
                              os.path.dirname(__file__).split('/')[:-1]))
     dirlist = [rootdir]  # Can add more directories if desired...
 
-    excluded_files = ["__init__.py", "fabfile.py", "setup.py"]
+    excluded_files = ["__init__.py", "fabfile.py", "setup.py"]  # Names or regex's
     excluded_dirs = ['.svn', '.git', 'man', 'migrations']
     sortest.continuously_test(dirlist, excluded_files,
                               excluded_dirs, verbose_level=1)

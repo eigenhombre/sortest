@@ -16,8 +16,8 @@ if __name__ == '__main__':
                         help=("Directory(ies) to search in and to perform tests "
                               "on (repeatable; default=current working directory)"))
     args = parser.parse_args()
-    excluded_files = ["setup.py"] + (args.exclude_file
-                                     if args.exclude_file else [])
+    excluded_files = (["setup.py", r'.+?\.pyc$', r'.+?_flymake\..+?'] +
+                      (args.exclude_file if args.exclude_file else []))
     excluded_dirs = ["bin", '.svn', '.git'] + (args.exclude_dir
                                                if args.exclude_dir else [])
     if args.quiet:
