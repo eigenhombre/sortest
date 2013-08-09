@@ -36,7 +36,7 @@ def find_python_update_times(excluded_dirs, pyfiles):
 
 
 def excluded_file(fname, excluded):
-    return [p for p in excluded if re.search(p, fname)]
+    return any(p for p in excluded if re.search(p, fname))
 
 
 def wanted_files(excluded_files, excluded_dirs, filesgen):
@@ -166,9 +166,11 @@ RUN = "R"
 WAIT = "w"
 
 
-def any_files_have_changed(filedict, last_check):
+def any_files_have_changed(filedict, last_check, verbose_level):
     for f in filedict:
         if f["saved"] > last_check:
+            if verbose_level > 0:
+                print "%s %s has changed" % ("." * 30, f["path"])
             return True
 
 
@@ -224,14 +226,14 @@ def continuously_test(rootdirs, excluded_files, excluded_dirs,
             if t - last_timeout > 0.5:
                 last_timeout = t
                 files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
-                if any_files_have_changed(files, file_t):
+                if any_files_have_changed(files, file_t, verbose_level):
                     file_t = time.time()
                     state = START
                     continue
 
         if state == WAIT:
             files = get_all_wanted_files(rootdirs, excluded_files, excluded_dirs)
-            if any_files_have_changed(files, file_t):
+            if any_files_have_changed(files, file_t, verbose_level):
                 file_t = time.time()
                 state = START
             else:
